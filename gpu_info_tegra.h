@@ -4,7 +4,7 @@ typedef enum nvmlReturn_enum {
   NVML_UNKNOWN_ERROR = 1,
   // Other values omitted for now...
 } nvmlReturn_t;
-typedef unsigned int nvmlDevice_t;  // Opaque is sufficient
+typedef unsigned int nvmlDevice_t;  // Code to get device handle needs updated, I think setting it to int messed it up.
 typedef struct nvmlMemory_st {
   unsigned long long total;
   unsigned long long free;
