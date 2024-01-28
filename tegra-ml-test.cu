@@ -4,7 +4,6 @@
 
 int main() {
 
-    nvmlMemory_t *memory;
     size_t freeMem, totalMem;
 
     // cudaDeviceCount -> nvmlDeviceGetCount_v2
@@ -36,16 +35,16 @@ int main() {
     major = deviceProp.major;
     minor = deviceProp.minor;
 
-    int total_mb = totalMem / (1024 * 1024);
-    int free_mb = freeMem / (1024 * 1024);
-    int used_mb = (totalMem - freeMem) / (1024 * 1024);
-    int usedMem = (totalMem - freeMem);
+    unsigned long total_mb = totalMem / (1024 * 1024);
+    unsigned long free_mb = freeMem / (1024 * 1024);
+    unsigned long used_mb = (totalMem - freeMem) / (1024 * 1024);
+    unsigned long usedMem = (totalMem - freeMem);
 
     printf("Device Number: %d || nvmlInit_v2() and nvmlShutDown() good.\n", device_handle);
     printf("  Memory info:\n");
-    printf("    Total: %d (%d MB)\n", totalMem, total_mb);
-    printf("    Used:  %d (%d MB)\n", usedMem, used_mb);
-    printf("    Free:  %d (%d MB)\n", freeMem, free_mb);
+    printf("    Total: %lu (%lu MB)\n", totalMem, total_mb);
+    printf("    Used:  %lu (%lu MB)\n", usedMem, used_mb);
+    printf("    Free:  %lu (%lu MB)\n", freeMem, free_mb);
     printf("\n");
     printf("  Device Count: %d\n", deviceCount);
     printf("  CUDA Compute Capability: %d.%d\n", major, minor);
