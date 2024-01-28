@@ -1,0 +1,59 @@
+ARG GOLANG_VERSION=1.21.3
+ARG CMAKE_VERSION=3.22.1
+ARG CUDA_VERSION=gguf-r35.4.1
+
+# Copy the minimal context we need to run the generate scripts
+FROM scratch AS llm-code
+COPY .git .git
+COPY .gitmodules .gitmodules
+COPY llm llm
+
+FROM --platform=linux/arm64 dustynv/llama_cpp:$CUDA_VERSION AS cuda-build-arm64
+ARG CMAKE_VERSION
+ARG GOLANG_VERSION
+ARG CGO_CFLAGS
+COPY ./scripts/tegra_linux_deps.sh /
+RUN CMAKE_VERSION=${CMAKE_VERSION} sh /tegra_linux_deps.sh
+ENV PATH /usr/local/bin:/usr/bin:$PATH
+COPY --from=llm-code / /go/src/github.com/jmorganca/ollama/
+WORKDIR /go/src/github.com/jmorganca/ollama/llm/generate
+RUN /usr/bin/rm -rf /go/src/github.com/jmorganca/ollama/llm/llama.cpp && cp -r /opt/llama-cpp-python/llama_cpp /go/src/github.com/jmorganca/ollama/llm/llama.cpp
+
+FROM --platform=linux/arm64 dustynv/llama_cpp:$CUDA_VERSION AS cpu-build-arm64
+ARG CMAKE_VERSION
+ARG GOLANG_VERSION
+ARG OLLAMA_CUSTOM_CPU_DEFS
+ARG CGO_CFLAGS
+COPY ./scripts/tegra_linux_deps.sh /
+RUN CMAKE_VERSION=${CMAKE_VERSION} GOLANG_VERSION=${GOLANG_VERSION} sh /tegra_linux_deps.sh
+ENV PATH /usr/local/bin:$PATH
+COPY --from=llm-code / /go/src/github.com/jmorganca/ollama/
+WORKDIR /go/src/github.com/jmorganca/ollama/llm/generate
+RUN /usr/bin/rm -rf /go/src/github.com/jmorganca/ollama/llm/llama.cpp && cp -r /opt/llama-cpp-python/llama_cpp /go/src/github.com/jmorganca/ollama/llm/llama.cpp
+
+# Intermediate stage used for ./scripts/build_linux.sh
+FROM --platform=linux/arm64 cpu-build-arm64 AS build-arm64
+ENV CGO_ENABLED 1
+ARG GOLANG_VERSION
+ARG GOFLAGS
+ARG CGO_CFLAGS
+WORKDIR /go/src/github.com/jmorganca/ollama
+COPY . .
+COPY --from=cuda-build-arm64 /go/src/github.com/jmorganca/ollama/llm/llama.cpp llm/llama.cpp/build/linux/1.0/llama-cpp-python/lib
+RUN go build .
+
+# Runtime stages
+FROM --platform=linux/arm64 dustynv/llama_cpp:$CUDA_VERSION as runtime-arm64
+RUN apt-get update && apt-get install -y ca-certificates
+COPY --from=build-arm64 /go/src/github.com/jmorganca/ollama/ollama /bin/ollama
+COPY gpu/libtegra-ml.so /bin/libtegra-ml.so
+
+FROM runtime-arm64
+EXPOSE 11434
+ENV OLLAMA_HOST 0.0.0.0
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib:/usr/local/cuda/lib64
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+ENTRYPOINT ["/bin/ollama"]
+CMD ["serve"]
