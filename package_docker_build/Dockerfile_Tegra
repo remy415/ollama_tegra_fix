@@ -30,7 +30,7 @@ RUN <<EOF > /root/ModelfileMistralJetson
 FROM mistral
 PARAMETER num_gpu 999
 EOF
-RUN /bin/ollama create mistral-jetson -f /root/ModelfileMistralJetson
+
 ENV OLLAMA_LLM_LIBRARY="cuda_v11"
 EXPOSE 11434
 ENV OLLAMA_HOST 0.0.0.0
