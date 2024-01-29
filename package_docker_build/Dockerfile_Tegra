@@ -3,7 +3,7 @@ ARG CMAKE_VERSION=3.22.1
 ARG L4T_VERSION=r35.4.1
 
 # Copy the minimal context we need to run the generate scripts
-FROM nvcr.io/nvidia/l4t-jetson:${L4T_VERSION} AS cuda-build-arm64-base
+FROM dustynv/llama_cpp:gguf-${L4T_VERSION} AS cuda-build-arm64-base
 ARG CMAKE_VERSION
 ARG GOLANG_VERSION
 WORKDIR /go/src/github.com/jmorganca/
