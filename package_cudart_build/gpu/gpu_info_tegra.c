@@ -18,7 +18,7 @@ void tegra_init(char *tegra_lib_path, tegra_init_resp_t *resp) {
       {"cudaDeviceReset", (void *)&resp->th.cudaDeviceReset},
       {"cudaMemGetInfo", (void *)&resp->th.cudaMemGetInfo},
       {"cudaGetDeviceCount", (void *)&resp->th.cudaGetDeviceCount},
-      {"cudaGetDeviceAttributes", (void *)&resp->th.cudaGetDeviceAttributes},
+      {"cudaGetDeviceAttribute", (void *)&resp->th.cudaGetDeviceAttribute},
       {"cudaDriverGetVersion", (void *)&resp->th.cudaDriverGetVersion},
       {NULL, NULL},
   };
