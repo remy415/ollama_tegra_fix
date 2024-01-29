@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Script for common Dockerfile dependency installation in redhat linux based images
+# Script for common Dockerfile dependency installation in Tegra L4T based images
 
 set -ex
 MACHINE=$(uname -m)
 
 if grep -i "ubuntu" /etc/os-release >/dev/null; then
-    # The Tegra images are Ubuntu 20.04-based
+    # Tegra L4T 35.x images are Ubuntu 20.04-based, L4T 36.x images are Ubuntu 22.04-based
 
     if [ "${MACHINE}" = "aarch64" ]; then
         add-apt-repository ppa:git-core/ppa
