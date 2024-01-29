@@ -46,7 +46,6 @@ RUN go build .
 FROM --platform=linux/arm64 dustynv/llama_cpp:$CUDA_VERSION as runtime-arm64
 RUN apt-get update && apt-get install -y ca-certificates
 COPY --from=build-arm64 /go/src/github.com/jmorganca/ollama/ollama /bin/ollama
-COPY gpu/libtegra-ml.so /bin/libtegra-ml.so
 
 FROM runtime-arm64
 EXPOSE 11434

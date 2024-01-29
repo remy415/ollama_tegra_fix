@@ -1,6 +1,22 @@
 # Ollama Tegra Fix
-Quick draft for an idea to compile custom shared-object library to query CUDA API on Tegra devices (Jetson). gpu.go file was modified to include new libtegra-ml.so binary, an os.getenv query to check if JETSON_JETPACK env variable is set (variable set by default by system), and report Tegra GPU detection.
 
-shared-object compiled on a Jetson Orin Nano 8g, running Jetpack 5.1.2 / L4T 35.4.1 / CUDA 11.8 with the nvcc compiler.
+Things you need to do:
 
-This is a work in progress.
+1. git clone 
+
+Ensure all files in package_cudart_build are copied into the ollama base directory / overwriting their files.
+
+```
+cd package_cudart_build
+cp -r ./* ../ollama/
+```
+
+Set some necessary ENV variables:
+```
+export OLLAMA_LLM_LIBRARY='cuda_v11'
+export OLLAMA_SKIP_CPU_GENERATE='yes'
+```
+
+Ensure
+-DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+is in the llm/generate/gen_linux.sh file under CUBLAS; it didn't compile until I hard-coded that value into the gen_linux script.
