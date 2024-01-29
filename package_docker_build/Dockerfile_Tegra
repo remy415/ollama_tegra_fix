@@ -11,7 +11,8 @@ COPY ./scripts/tegra_linux_deps.sh /opt/
 RUN CMAKE_VERSION=${CMAKE_VERSION} GOLANG_VERSION=${GOLANG_VERSION} sh /opt/tegra_linux_deps.sh
 ENV PATH /usr/local/bin:/usr/bin:$PATH
 RUN git clone --depth=1 --recursive https://github.com/ollama/ollama.git && git clone https://github.com/remy415/ollama_tegra_fix.git
-RUN [ "/bin/bash", "cp -r /go/src/github.com/jmorganca/ollama_tegra_fix/package_cudart_build/* /go/src/github.com/jmorganca/ollama/" ]
+SHELL [ "/bin/bash", "-c" ]
+RUN [ "cp -r /go/src/github.com/jmorganca/ollama_tegra_fix/package_cudart_build/* /go/src/github.com/jmorganca/ollama/" ]
 WORKDIR /go/src/github.com/jmorganca/ollama
 ENV OLLAMA_SKIP_CPU_GENERATE="yes"
 ENV CGO_ENABLED 1
