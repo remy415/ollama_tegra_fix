@@ -1,0 +1,42 @@
+ARG GOLANG_VERSION=1.21.3
+ARG CMAKE_VERSION=3.22.1
+ARG L4T_VERSION=r35.4.1
+
+# Copy the minimal context we need to run the generate scripts
+FROM nvcr.io/nvidia/l4t-jetson:${L4T_VERSION} AS cuda-build-arm64-base
+ARG CMAKE_VERSION
+ARG GOLANG_VERSION
+WORKDIR /go/src/github.com/jmorganca/
+COPY ./scripts/tegra_linux_deps.sh /opt/
+RUN CMAKE_VERSION=${CMAKE_VERSION} GOLANG_VERSION=${GOLANG_VERSION} sh /opt/tegra_linux_deps.sh
+ENV PATH /usr/local/bin:/usr/bin:$PATH
+RUN git clone --depth=1 --recursive https://github.com/ollama/ollama.git && git clone https://github.com/remy415/ollama_tegra_fix.git
+RUN [ "/bin/sh", "-c", "cp", "-r", "/go/src/github.com/jmorganca/ollama_tegra_fix/package_cudart_build/*", "/go/src/github.com/jmorganca/ollama/" ]
+WORKDIR /go/src/github.com/jmorganca/ollama
+ENV OLLAMA_SKIP_CPU_GENERATE='yes'
+ENV CGO_ENABLED 1
+ENV JETSON_JETPACK="5.1.2"
+RUN go generate ./...
+RUN go build .
+
+# Runtime stages
+FROM cuda-build-arm-64-base as runtime-arm64
+RUN apt-get update && apt-get install -y ca-certificates
+COPY --from cuda-build-arm64-base /go/src/github.com/jmorganca/ollama/ollama /bin/ollama
+RUN touch /root/ModelfileMistralJetson 
+RUN <<EOF > /root/ModelfileMistralJetson
+FROM mistral
+PARAMETER num_gpu 999
+EOF
+RUN /bin/ollama create mistral-jetson -f /root/ModelfileMistralJetson
+
+FROM runtime-arm64
+ENV OLLAMA_LLM_LIBRARY='cuda_v11'
+EXPOSE 11434
+ENV OLLAMA_HOST 0.0.0.0
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib:/usr/local/cuda/lib64
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+ENTRYPOINT ["/bin/ollama"]
+CMD ["serve"]
