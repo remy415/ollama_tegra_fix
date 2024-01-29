@@ -2,8 +2,11 @@
 
 Things you need to do:
 
-1. git clone ollama, including the recursive flag to get llama_cpp
-
+1. git clone ollama including the recursive flag to get llama_cpp. Clone this repo.
+```
+git clone --depth=1 --recursive https://github.com/ollama/ollama.git
+git clone https://github.com/remy415/ollama_tegra_fix.git
+```
 
 2. Ensure all files in package_cudart_build are copied into the ollama base directory / overwriting their files.
 
@@ -12,8 +15,8 @@ Also ensure: ***IMPORTANT***
 is in the llm/generate/gen_linux.sh file under CUBLAS; it didn't compile until I hard-coded that value into the gen_linux script.
 
 ```
-cd package_cudart_build
-cp -r ./* ../ollama/
+cd ollama_tegra_fix/package_cudart_build
+cp -r ./* ../../ollama/
 ```
 
 3. Set some necessary ENV variables:
