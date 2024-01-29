@@ -22,7 +22,7 @@ RUN go generate ./...
 RUN go build .
 
 # Runtime stages
-FROM cuda-build-arm-64-base as runtime-arm64
+FROM dustynv/llama_cpp:gguf-${L4T_VERSION} as runtime-arm64
 RUN apt-get update && apt-get install -y ca-certificates
 COPY --from=cuda-build-arm64-base /go/src/github.com/jmorganca/ollama/ollama /bin/ollama
 RUN touch /root/ModelfileMistralJetson 
@@ -31,8 +31,6 @@ FROM mistral
 PARAMETER num_gpu 999
 EOF
 RUN /bin/ollama create mistral-jetson -f /root/ModelfileMistralJetson
-
-FROM runtime-arm64
 ENV OLLAMA_LLM_LIBRARY="cuda_v11"
 EXPOSE 11434
 ENV OLLAMA_HOST 0.0.0.0
