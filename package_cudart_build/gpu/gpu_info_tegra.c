@@ -18,7 +18,7 @@ void tegra_init(char *tegra_lib_path, tegra_init_resp_t *resp) {
       {"cudaDeviceReset", (void *)&resp->th.cudaDeviceReset},
       {"cudaMemGetInfo", (void *)&resp->th.cudaMemGetInfo},
       {"cudaGetDeviceCount", (void *)&resp->th.cudaGetDeviceCount},
-      {"cudaGetDeviceAttribute", (void *)&resp->th.cudaGetDeviceAttribute},
+      {"cudaDeviceGetAttribute", (void *)&resp->th.cudaDeviceGetAttribute},
       {"cudaDriverGetVersion", (void *)&resp->th.cudaDriverGetVersion},
       {NULL, NULL},
   };
@@ -156,8 +156,6 @@ void tegra_compute_capability(tegra_handle_t th, tegra_compute_capability_t *res
   resp->err = NULL;
   resp->major = 0;
   resp->minor = 0;
-  int major = 0;
-  int minor = 0;
   tegraReturn_t ret;
   const int buflen = 256;
   char buf[buflen + 1];
@@ -176,15 +174,16 @@ void tegra_compute_capability(tegra_handle_t th, tegra_compute_capability_t *res
   }
 
   int devId = 0; // Tegra device id is always 0
+  int major = 0;
+  int minor = 0;
 
-  
-  ret = (*th.cudaGetDeviceAttribute)(&major, cudaDevAttrComputeCapabilityMajor, devId);
+  ret = (*th.cudaDeviceGetAttribute)(&major, cudaDevAttrComputeCapabilityMajor, devId);
   if (ret != TEGRA_SUCCESS) {
     snprintf(buf, buflen, "device compute capability lookup failure %d: %d", devId, ret);
     resp->err = strdup(buf);
     return;
   }
-  ret = (*th.cudaGetDeviceAttribute)(&minor, cudaDevAttrComputeCapabilityMinor, devId);
+  ret = (*th.cudaDeviceGetAttribute)(&minor, cudaDevAttrComputeCapabilityMinor, devId);
   if (ret != TEGRA_SUCCESS) {
     snprintf(buf, buflen, "device compute capability lookup failure %d: %d", devId, ret);
     resp->err = strdup(buf);
