@@ -39,7 +39,7 @@ typedef struct tegra_handle {
   tegraReturn_t (*cudaDeviceReset)(void);
   tegraReturn_t (*cudaMemGetInfo)(size_t *, size_t *);
   tegraReturn_t (*cudaGetDeviceCount)(int *);
-  tegraReturn_t (*cudaGetDeviceGetAttribute)(int* value, cudaDeviceAttr_t attr, int device);
+  tegraReturn_t (*cudaGetDeviceAttribute)(int* value, cudaDeviceAttr_t attr, int device);
   tegraReturn_t (*cudaDriverGetVersion) (int *driverVersion);
 } tegra_handle_t;
 
