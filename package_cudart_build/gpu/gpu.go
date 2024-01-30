@@ -180,8 +180,8 @@ func GetGPUInfo() GpuInfo {
 	} else if gpuHandles.tegra != nil {
 		// C.tegra_check_vram(*gpuHandles.tegra, &memInfo) // Tegra is iGPU, should gather data similar to MacOS
 		mem, _ := getCPUMem()
-		memInfo.free = mem.FreeMemory
-		memInfo.total = mem.TotalMemory
+		memInfo.free = uint32(mem.FreeMemory)
+		memInfo.total = uint32(mem.TotalMemory)
 		// Verify minimum compute capability
 		var tcc C.tegra_compute_capability_t
 		C.tegra_compute_capability(*gpuHandles.tegra, &tcc)
