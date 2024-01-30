@@ -179,23 +179,21 @@ func GetGPUInfo() GpuInfo {
 		}
 	} else if gpuHandles.tegra != nil {
 		// C.tegra_check_vram(*gpuHandles.tegra, &memInfo) // Tegra is iGPU, should gather data similar to MacOS
-		memInfo, _ := getCPUMem()
-		if memInfo.err != nil {
-			slog.Info(fmt.Sprintf("error looking up Tegra memory: %s", C.GoString(memInfo.err)))
-			C.free(unsafe.Pointer(memInfo.err))
+		mem, _ := getCPUMem()
+		memInfo.free = mem.free
+		memInfo.total = mem.total
+		// Verify minimum compute capability
+		var tcc C.tegra_compute_capability_t
+		C.tegra_compute_capability(*gpuHandles.tegra, &tcc)
+		if tcc.err != nil {
+			slog.Info(fmt.Sprintf("error looking up Tegra SOC CUDA compute capability: %s", C.GoString(tcc.err)))
+			C.free(unsafe.Pointer(tcc.err))
+		} else if tcc.major > CudaComputeMin[0] || (tcc.major == CudaComputeMin[0] && tcc.minor >= CudaComputeMin[1]) {
+			slog.Info(fmt.Sprintf("Tegra CUDA Compute Capability detected: %d.%d", tcc.major, tcc.minor))
+			memInfo.count += 1
+			resp.Library = "tegra"
 		} else {
-			// Verify minimum compute capability
-			var tcc C.tegra_compute_capability_t
-			C.tegra_compute_capability(*gpuHandles.tegra, &tcc)
-			if tcc.err != nil {
-				slog.Info(fmt.Sprintf("error looking up Tegra SOC CUDA compute capability: %s", C.GoString(tcc.err)))
-				C.free(unsafe.Pointer(tcc.err))
-			} else if tcc.major > CudaComputeMin[0] || (tcc.major == CudaComputeMin[0] && tcc.minor >= CudaComputeMin[1]) {
-				slog.Info(fmt.Sprintf("Tegra CUDA Compute Capability detected: %d.%d", tcc.major, tcc.minor))
-				resp.Library = "tegra"
-			} else {
-				slog.Info(fmt.Sprintf("Tegra CUDA GPU is too old. Falling back to CPU mode. Compute Capability detected: %d.%d", tcc.major, tcc.minor))
-			}
+			slog.Info(fmt.Sprintf("Tegra CUDA GPU is too old. Falling back to CPU mode. Compute Capability detected: %d.%d", tcc.major, tcc.minor))
 		}
 	} else if gpuHandles.rocm != nil && (cpuVariant != "" || runtime.GOARCH != "amd64") {
 		C.rocm_check_vram(*gpuHandles.rocm, &memInfo)
