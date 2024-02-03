@@ -1,6 +1,8 @@
 # Ollama Tegra Fix
 
-*** NOTE *** Compiling llama_cpp with CUDA enabled requires CMAKE 3.17 and higher. On Jetpack 5, it will require manual
+*** NOTE *** This guide is deprecated and likely doesn't work. I'm working on updating.
+
+Compiling llama_cpp with CUDA enabled requires CMAKE 3.17 and higher. On Jetpack 5, it will require manual
 installation of cmake.
 
 Things you need to do:
