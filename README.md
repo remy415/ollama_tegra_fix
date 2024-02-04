@@ -1,11 +1,13 @@
 # Ollama Tegra Fix
 ## Required environment setup
-On Jetpack 5, you will need to manually install the new version of cmake.
+On Jetpack 5, you will need to manually install the new version of cmake. 
 You can try using pip to install it, YMMV.
 
+```
 cmake >= 3.17 # Compiling llama_cpp with CUBLAS/CUDA enabled requires CMAKE 3.17 or higher. 
 gcc >= 9 # CUDA 11.8 CPP requires gcc/g++ >= 9
 golang >= v1.26.6 # This is just what I used, I don't know the minimum Golang requirement.
+```
 
 ## Important ENV Vars for building. Note: this is a WIP, I am still validating ENV vars.
 
@@ -15,7 +17,9 @@ golang >= v1.26.6 # This is just what I used, I don't know the minimum Golang re
 # was required to tell the compiler where the "compat" libcuda.so
 # is kept, otherwise it defaulted to the CUDA 11-4 libcuda.so and
 # crashed on 'ollama run'.
-export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/compat:/usr/local/cuda/include"
+
+# IMPORTANT: THE COMPILER NEEDS ALL 3 OF THESE.
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/compat:/usr/local/cuda/include" 
 export CGO_FLAGS="-g"
 export OLLAMA_LLM_LIBRARY="cuda_v11" 
 export OLLAMA_SKIP_CPU_GENERATE="yes" # Might as well set this since ARM SOCs don't support AVX
