@@ -18,7 +18,7 @@ golang >= v1.26.6 # This is just what I used, I don't know the minimum Golang re
 # is kept, otherwise it defaulted to the CUDA 11-4 libcuda.so and
 # crashed on 'ollama run'.
 
-# IMPORTANT: THE COMPILER NEEDS ALL 3 OF THESE.
+# IMPORTANT: THE COMPILER NEEDS ALL 3 LD_LIBRARY_PATH PATHS.
 export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/compat:/usr/local/cuda/include" 
 export CGO_FLAGS="-g"
 export OLLAMA_LLM_LIBRARY="cuda_v11" 
