@@ -6,8 +6,8 @@
 # Tegra devices will fail generate unless architectures are set:
         # Nano/TX1 = 5.3, TX2 = 6.2, Xavier = 7.2, Orin = 8.7
         # L4T_VERSION.major >= 36:    # JetPack 6
-        #     CUDA_ARCHITECTURES = [87]
+        #     CUDA_ARCHITECTURES="87"
         # L4T_VERSION.major >= 34:  # JetPack 5
-        #     CUDA_ARCHITECTURES = [72, 87]
+        #     CUDA_ARCHITECTURES="72;87"
         # L4T_VERSION.major == 32:  # JetPack 4
-        #     CUDA_ARCHITECTURES = [53, 62, 72]
+        #     CUDA_ARCHITECTURES="53;62;72"
