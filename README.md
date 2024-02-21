@@ -7,8 +7,8 @@
 
 ## Also, Tegra devices will fail `go generate ./...` unless architectures are set:
 ### L4T_VERSION.major >= 36:    # JetPack 6
-`export CUDA_ARCHITECTURES="87"`
+`export CMAKE_CUDA_ARCHITECTURES="87"`
 ### L4T_VERSION.major >= 34:  # JetPack 5
-`export CUDA_ARCHITECTURES="72;87"`
+`export CMAKE_CUDA_ARCHITECTURES="72;87"`
 ### L4T_VERSION.major == 32:  # JetPack 4
-`export CUDA_ARCHITECTURES="53;62;72"`
+`export CMAKE_CUDA_ARCHITECTURES="53;62;72"`
