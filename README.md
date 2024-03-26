@@ -1,5 +1,5 @@
 # Ollama Tegra Fix
-## SEE `https://github.com/remy415/ollama` FOR AUTOMATED BUILD. 
+## Jetson support should be included as of Ollama 0.1.30. Please see the official repo for more information https://github.com/ollama/ollama
 
 ### ENSURE THESE TWO VARIABLES ARE SET:
 `export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/compat:/usr/local/cuda/include"`
